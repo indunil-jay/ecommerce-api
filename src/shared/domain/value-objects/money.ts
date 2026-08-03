@@ -21,4 +21,8 @@ export class Money {
     equals(other: Money): boolean {
         return this.amount === other.amount && this.currency === other.currency;
     }
+
+    toCents(): number {
+        return Math.round(this.amount * 100);
+    }
 }
