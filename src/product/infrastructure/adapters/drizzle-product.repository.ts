@@ -1,10 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { SQL, eq, gte, lte, ilike, and } from "drizzle-orm";
-import { ProductFilters, ProductRepository } from "src/product/application/ports/product.repository.port";
+
+import { SQL, eq, gte, lte, and } from "drizzle-orm";
+
 import { Product } from "src/product/domain/entities/product.entity";
 import { ProductId } from "src/product/domain/value-objects/product-id.vo";
 import { Sku } from "src/product/domain/value-objects/sku.vo";
 import { Money } from "src/shared/domain/value-objects/money";
+
+import { ProductFilters, ProductRepository } from "src/product/application/ports/product.repository.port";
+
 import { DRIZZLE, type DrizzleDB } from "src/shared/infrastructure/database/postgres/drizzle.provider";
 import { products } from "src/shared/infrastructure/database/postgres/schemas";
 
@@ -71,7 +75,7 @@ export class DrizzleProductRepository implements ProductRepository {
             updatedAt: product.updatedAt,
         }
     }
-    
+
     private static toDomain(row: typeof products.$inferSelect): Product {
         return Product.reconsitute({
             id: new ProductId(row.id),

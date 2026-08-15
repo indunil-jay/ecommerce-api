@@ -44,7 +44,7 @@ export class Product extends AggregateRoot {
         this._updatedAt = props.updatedAt;
     }
 
-    public static create(name: string, description: string, sku: string, price: Money, stock: number): Product {
+    public static create(name: string, description: string, sku: string, price: number, currency: string, stock: number): Product {
         Product.validateName(name);
         Product.validateStock(stock);
         return new Product({
@@ -52,7 +52,7 @@ export class Product extends AggregateRoot {
             name,
             description,
             sku: Sku.create(sku),
-            price,
+            price: Money.create(price, currency),
             stock,
             isActive: stock > 0,
             lowStockThreshold: 10,

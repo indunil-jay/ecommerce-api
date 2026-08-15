@@ -1,7 +1,7 @@
 import { Product } from "src/product/domain/entities/product.entity";
 import { ProductId } from "src/product/domain/value-objects/product-id.vo";
 
-export const PRODUCT_REPOSITORY_PORT = Symbol('PRODUCT_REPOSITORY');
+export const PRODUCT_REPOSITORY = Symbol('PRODUCT_REPOSITORY');
 
 export interface ProductFilters {
     isActive?: boolean;
