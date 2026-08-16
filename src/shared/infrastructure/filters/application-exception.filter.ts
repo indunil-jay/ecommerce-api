@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from "@nestjs/common";
 import { Response } from "express";
-import { ApplicationException } from "src/shared/domain/application.exception";
+import { ApplicationException } from "src/shared/domain/exceptions/application.exception";
 import { ApplicationExceptionCode } from "src/shared/domain/enums/application-exception-code";
 
 

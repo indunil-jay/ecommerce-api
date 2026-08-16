@@ -1,4 +1,4 @@
-import { AggregateRoot } from "src/shared/domain/aggregate-root";
+import { AggregateRoot } from "src/shared/domain/aggregates/aggregate-root";
 import { ProductId } from "../value-objects/product-id.vo";
 import { Sku } from "../value-objects/sku.vo";
 import { Money } from "src/shared/domain/value-objects/money";

@@ -4,7 +4,7 @@ import { Inject } from "@nestjs/common";
 import { PRODUCT_REPOSITORY, ProductRepository } from "../../ports/product.repository.port";
 import { Product } from "../../../domain/entities/product.entity";
 import { Sku } from "src/product/domain/value-objects/sku.vo";
-import { ApplicationException } from "src/shared/domain/application.exception";
+import { ApplicationException } from "src/shared/domain/exceptions/application.exception";
 import { ApplicationExceptionCode } from "src/shared/domain/enums/application-exception-code";
 
 @CommandHandler(CreateProductCommand)

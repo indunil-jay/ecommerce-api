@@ -1,4 +1,4 @@
-import { ApplicationExceptionCode } from "./enums/application-exception-code";
+import { ApplicationExceptionCode } from "../enums/application-exception-code";
 
 
 export class ApplicationException extends Error {
