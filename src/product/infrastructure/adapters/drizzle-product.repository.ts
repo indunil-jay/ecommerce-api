@@ -17,6 +17,7 @@ import { products } from "src/shared/infrastructure/database/postgres/schemas";
 export class DrizzleProductRepository implements ProductRepository {
     constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) { }
 
+
     async save(product: Product): Promise<void> {
         const row = DrizzleProductRepository.toPersistence(product);
         await this.db.insert(products)
@@ -42,6 +43,19 @@ export class DrizzleProductRepository implements ProductRepository {
         });
         return row ? DrizzleProductRepository.toDomain(row) : null;
     }
+
+
+    async findByName(name: string): Promise<Product | null> {
+        const row = await this.db.select().from(products).where(eq(products.name, name)).limit(1);
+        return row.length > 0 ? DrizzleProductRepository.toDomain(row[0]) : null;
+    }
+
+    async findBySku(sku: Sku): Promise<Product | null> {
+        const row = await this.db.select().from(products).where(eq(products.sku, sku.getValue())).limit(1);
+        return row.length > 0 ? DrizzleProductRepository.toDomain(row[0]) : null;
+    }
+
+
     async findAll(fiters: ProductFilters): Promise<Product[]> {
         const conditions: SQL[] = [];
         if (fiters.isActive !== undefined) {
