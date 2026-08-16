@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:3000
+
+### 1. Get All Customers
+GET {{baseUrl}}/customers HTTP/1.1
+
+###
+
+### 2. Get Customer by ID
+@customerId = 1982127c-eb7c-46db-b73f-d2c4c6ffc7f1
+GET {{baseUrl}}/customers/{{customerId}} HTTP/1.1
