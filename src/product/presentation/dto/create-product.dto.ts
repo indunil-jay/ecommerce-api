@@ -3,19 +3,20 @@ import { IsNumber, IsOptional, IsString, Matches, MaxLength, Min, MinLength } fr
 
 export class CreateProductDto {
     @IsString()
-    @MinLength(2)
-    @MaxLength(255)
-    name:string;
+    @MinLength(3)
+    @MaxLength(100)
+    name: string;
 
     @IsString()
-    description : string;
+    description: string;
 
     @IsString()
     @MinLength(3)
     @MaxLength(50)
     @Matches(/^[A-Za-z0-9]+$/, {
-        message: `Sku must contain only alphanumeric characters dashes` })
-    sku : string;
+        message: 'Sku must contain only alphanumeric characters',
+    })
+    sku: string;
 
 
     @IsNumber()

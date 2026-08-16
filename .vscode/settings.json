@@ -1,0 +1,11 @@
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "baseUrl": "http://localhost:3000",
+      "contentType": "application/json"
+    },
+    "local": {
+      "baseUrl": "http://localhost:3000"
+    }
+  }
+}

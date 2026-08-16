@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Create Product
+POST {{baseUrl}}/products
+Content-Type: {{contentType}}
+
+{
+  "name": "Wireless Noise Cancelling Headphones",
+  "description": "Premium over-ear headphones with active noise cancellation and 30-hour battery life.",
+  "sku": "HEADPHONE01",
+  "price": 299.99,
+  "currency": "USD",
+  "stock": 50
+}

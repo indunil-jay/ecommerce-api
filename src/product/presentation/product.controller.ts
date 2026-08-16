@@ -4,7 +4,7 @@ import { CreateProductDto } from "./dto/create-product.dto";
 import { CreateProductCommand } from "../application/use-cases/create-product/create-product.command";
 
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
     constructor(
         private readonly queryBus: QueryBus,

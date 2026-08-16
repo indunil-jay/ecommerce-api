@@ -12,7 +12,8 @@ export const DrizzleProvider = {
     inject: [ConfigService],
     useFactory: async (config: ConfigService): Promise<DrizzleDB> => {
         const connectionString = config.getOrThrow<string>("POSTGRES_DATABASE_URL");
-        const client = postgres(connectionString);
-        return drizzle(client, {schema});
+        const createClient = typeof postgres === 'function' ? postgres : (postgres as any).default;
+        const client = createClient(connectionString);
+        return drizzle(client, { schema });
     }
 }
