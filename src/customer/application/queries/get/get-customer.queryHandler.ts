@@ -2,8 +2,8 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { GetCustomerQuery } from "./get-customer.query";
 import { Inject } from "@nestjs/common";
 import { CUSTOMER_REPOSITORY, CustomerRepository } from "../../ports/customer-repository.port";
-import { Customer } from "src/customers/domain/entities/customer.entity";
-import { CustomerId } from "src/customers/domain/value-objects/customer-id.vo";
+import { Customer } from "src/customer/domain/entities/customer.entity";
+import { CustomerId } from "src/customer/domain/value-objects/customer-id.vo";
 import { ApplicationException } from "src/shared/domain/exceptions/application.exception";
 import { ApplicationExceptionCode } from "src/shared/domain/enums/application-exception-code";
 

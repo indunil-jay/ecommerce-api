@@ -1,6 +1,6 @@
-import { Customer } from "src/customers/domain/entities/customer.entity";
-import { CustomerId } from "src/customers/domain/value-objects/customer-id.vo";
-import { Email } from "src/customers/domain/value-objects/email.vo";
+import { Customer } from "src/customer/domain/entities/customer.entity";
+import { CustomerId } from "src/customer/domain/value-objects/customer-id.vo";
+import { Email } from "src/customer/domain/value-objects/email.vo";
 
 export const CUSTOMER_REPOSITORY = Symbol('CUSTOMER_REPOSITORY');
 

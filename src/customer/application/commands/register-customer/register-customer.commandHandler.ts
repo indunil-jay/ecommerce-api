@@ -2,8 +2,8 @@ import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 import { RegisterCustomerCommand } from "./register-customer.command";
 import { Inject } from "@nestjs/common";
 import { CUSTOMER_REPOSITORY, CustomerRepository } from "../../ports/customer-repository.port";
-import { Customer } from "src/customers/domain/entities/customer.entity";
-import { Email } from "src/customers/domain/value-objects/email.vo";
+import { Customer } from "src/customer/domain/entities/customer.entity";
+import { Email } from "src/customer/domain/value-objects/email.vo";
 import { ApplicationException } from "src/shared/domain/exceptions/application.exception";
 import { ApplicationExceptionCode } from "src/shared/domain/enums/application-exception-code";
 

@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { eq } from "drizzle-orm";
-import { CustomerRepository } from "src/customers/application/ports/customer-repository.port";
-import { Customer } from "src/customers/domain/entities/customer.entity";
-import { CustomerId } from "src/customers/domain/value-objects/customer-id.vo";
-import { Email } from "src/customers/domain/value-objects/email.vo";
+import { CustomerRepository } from "src/customer/application/ports/customer-repository.port";
+import { Customer } from "src/customer/domain/entities/customer.entity";
+import { CustomerId } from "src/customer/domain/value-objects/customer-id.vo";
+import { Email } from "src/customer/domain/value-objects/email.vo";
 import { DRIZZLE, DrizzleDB } from "src/shared/infrastructure/database/postgres/drizzle.provider";
 import { customers } from "src/shared/infrastructure/database/postgres/schemas";
 

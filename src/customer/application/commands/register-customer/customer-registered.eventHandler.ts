@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { CustomerRegisteredEvent } from "src/customers/domain/events/customer-registered.event";
+import { CustomerRegisteredEvent } from "src/customer/domain/events/customer-registered.event";
 import { INotification, NOTIFICATION_SERVICE } from "../../ports/notification.port";
 
 @EventsHandler(CustomerRegisteredEvent)

@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteCustomerCommand } from "./delete-customer.command";
 import { Inject } from "@nestjs/common";
 import { CUSTOMER_REPOSITORY, CustomerRepository } from "../../ports/customer-repository.port";
-import { CustomerId } from "src/customers/domain/value-objects/customer-id.vo";
+import { CustomerId } from "src/customer/domain/value-objects/customer-id.vo";
 import { ApplicationException } from "src/shared/domain/exceptions/application.exception";
 import { ApplicationExceptionCode } from "src/shared/domain/enums/application-exception-code";
 

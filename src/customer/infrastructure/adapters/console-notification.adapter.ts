@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { INotification, Notification } from "../../application/ports/notification.port";
-import { CUSTOMER_REPOSITORY, CustomerRepository } from "src/customers/application/ports/customer-repository.port";
-import { CustomerId } from "src/customers/domain/value-objects/customer-id.vo";
+import { CUSTOMER_REPOSITORY, CustomerRepository } from "src/customer/application/ports/customer-repository.port";
+import { CustomerId } from "src/customer/domain/value-objects/customer-id.vo";
 
 @Injectable()
 export class ConsoleNotificationAdapter implements INotification {
