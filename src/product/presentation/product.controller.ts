@@ -3,7 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { CreateProductCommand } from "../application/commands/create-product/create-product.command";
 import { ProductResponseDto } from "./dto/product-response.dto";
-import { GetAllProductsQuery } from "../application/queries/get-all-products.query";
+import { GetAllProductsQuery } from "../application/queries/get-all/get-all-products.query";
 
 
 @Controller('products')
