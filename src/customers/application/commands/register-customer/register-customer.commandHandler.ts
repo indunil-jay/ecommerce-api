@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 import { RegisterCustomerCommand } from "./register-customer.command";
 import { Inject } from "@nestjs/common";
 import { CUSTOMER_REPOSITORY, CustomerRepository } from "../../ports/customer-repository.port";
@@ -11,7 +11,8 @@ import { ApplicationExceptionCode } from "src/shared/domain/enums/application-ex
 export class RegisterCustomerCommandHandler implements ICommandHandler<RegisterCustomerCommand, void> {
     constructor(
         @Inject(CUSTOMER_REPOSITORY)
-        private readonly customerRepository: CustomerRepository
+        private readonly customerRepository: CustomerRepository,
+        private readonly eventPublisher: EventPublisher
     ) {}
 
     async execute(command: RegisterCustomerCommand): Promise<void> {
@@ -21,13 +22,23 @@ export class RegisterCustomerCommandHandler implements ICommandHandler<RegisterC
             throw new ApplicationException(`Customer with email ${command.email} already exists`, ApplicationExceptionCode.CONFLICT);
         }
 
-        const customer = Customer.register(
-            email,
-            command.firstName,
-            command.lastName,
-            command.phone
-        );
+        if (command.phone) {
+            const existingPhone = await this.customerRepository.findByPhone(command.phone);
+            if (existingPhone) {
+                throw new ApplicationException(`Customer with phone ${command.phone} already exists`, ApplicationExceptionCode.CONFLICT);
+            }
+        }
+
+        const customer = this.eventPublisher.mergeObjectContext(
+            Customer.register(
+                email,
+                command.firstName,
+                command.lastName,
+                command.phone
+            )
+        )
 
         await this.customerRepository.save(customer);
+        customer.commit();
     }
 }

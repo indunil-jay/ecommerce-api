@@ -30,12 +30,16 @@ export class DrizzleCustomerRepository implements CustomerRepository {
             });
     }
     async findById(id: CustomerId): Promise<Customer | null> {
-        const rows = await this.db.select().from(customers).where(eq(customers.id, id.getValue()));
-        return rows.length > 0 ? DrizzleCustomerRepository.toDomain(rows[0]) : null;
+        const [row] = await this.db.select().from(customers).where(eq(customers.id, id.getValue())).limit(1);
+        return row ? DrizzleCustomerRepository.toDomain(row) : null;
     }
     async findByEmail(email: Email): Promise<Customer | null> {
-        const rows = await this.db.select().from(customers).where(eq(customers.email, email.getValue()));
-        return rows.length > 0 ? DrizzleCustomerRepository.toDomain(rows[0]) : null;
+        const [row] = await this.db.select().from(customers).where(eq(customers.email, email.getValue())).limit(1);
+        return row ? DrizzleCustomerRepository.toDomain(row) : null;
+    }
+    async findByPhone(phone: string): Promise<Customer | null> {
+        const [row] = await this.db.select().from(customers).where(eq(customers.phone, phone)).limit(1);
+        return row ? DrizzleCustomerRepository.toDomain(row) : null;
     }
     async findAll(): Promise<Customer[]> {
         const rows = await this.db.select().from(customers);

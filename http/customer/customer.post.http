@@ -6,8 +6,8 @@ POST {{baseUrl}}/customers
 Content-Type: {{contentType}}
 
 {
-  "email": "john.doe@example.com",
-  "firstName": "John",
-  "lastName": "Doe",
+  "email": "indunilthilina9@example.com",
+  "firstName": "indunil",
+  "lastName": "thilina",
   "phone": "+94768302646"
 }
