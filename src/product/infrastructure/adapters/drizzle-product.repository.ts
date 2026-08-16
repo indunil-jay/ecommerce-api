@@ -38,21 +38,23 @@ export class DrizzleProductRepository implements ProductRepository {
             });
     }
     async findById(id: ProductId): Promise<Product | null> {
-        const row = await this.db.query.products.findFirst({
-            where: eq(products.id, id.getValue()),
-        });
+        const [row] = await this.db.select().from(products).where(eq(products.id, id.getValue()));
         return row ? DrizzleProductRepository.toDomain(row) : null;
     }
 
 
     async findByName(name: string): Promise<Product | null> {
-        const row = await this.db.select().from(products).where(eq(products.name, name)).limit(1);
-        return row.length > 0 ? DrizzleProductRepository.toDomain(row[0]) : null;
+        const [row] = await this.db.select().from(products).where(eq(products.name, name)).limit(1);
+        return row ? DrizzleProductRepository.toDomain(row) : null;
     }
 
     async findBySku(sku: Sku): Promise<Product | null> {
-        const row = await this.db.select().from(products).where(eq(products.sku, sku.getValue())).limit(1);
-        return row.length > 0 ? DrizzleProductRepository.toDomain(row[0]) : null;
+        const [row] = await this.db.select().from(products).where(eq(products.sku, sku.getValue())).limit(1);
+        return row ? DrizzleProductRepository.toDomain(row) : null;
+    }
+
+    async delete(id: ProductId): Promise<void> {
+        await this.db.delete(products).where(eq(products.id, id.getValue()));
     }
 
 

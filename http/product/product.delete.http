@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:3000
+@productId = bdd01b79-1319-41c1-b7d3-2a61019138d1
+
+### Delete Product by ID
+DELETE {{baseUrl}}/products/{{productId}} HTTP/1.1
