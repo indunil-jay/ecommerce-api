@@ -19,4 +19,4 @@ export class UniqueId {
     toString(): string {
         return this.value;
     }
-}
+}
