@@ -3,7 +3,8 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { ProductController } from "./presentation/product.controller";
 import { DrizzleProductRepository } from "./infrastructure/adapters/drizzle-product.repository";
 import { PRODUCT_REPOSITORY } from "./application/ports/product.repository.port";
-import { CommandHandlers, QueryHandlers } from "./application";
+import {  QueryHandlers } from "./application/queries";
+import { CommandHandlers } from "./application/commands";
 
 @Module({
    imports :[CqrsModule],
