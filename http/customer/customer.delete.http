@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:3000
+@customerId = 3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+### Delete Customer by ID
+DELETE {{baseUrl}}/customers/{{customerId}} HTTP/1.1

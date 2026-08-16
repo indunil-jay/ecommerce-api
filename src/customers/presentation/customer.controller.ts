@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { RegisterCustomerDto } from "./dtos/register-customer.dto";
 import { RegisterCustomerCommand } from "../application/commands/register-customer/register-customer.command";
+import { DeleteCustomerCommand } from "../application/commands/delete-customer/delete-customer.command";
 import { CustomerResponseDto } from "./dtos/customer-response.dto";
 import { GetAllCustomersQuery } from "../application/queries/get-all/get-all-customers.query";
 import { GetCustomerQuery } from "../application/queries/get/get-customer.query";
@@ -40,5 +41,13 @@ export class CustomerController {
             new GetCustomerQuery(id)
         );
         return CustomerResponseDto.fromDomain(customer);
+    }
+
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+        await this.commandBus.execute<DeleteCustomerCommand, void>(
+            new DeleteCustomerCommand(id)
+        );
     }
 }
