@@ -1,0 +1,24 @@
+@baseUrl = http://localhost:3000
+
+### 1. Get All Products (No filters)
+GET {{baseUrl}}/products HTTP/1.1
+
+###
+
+### 2. Get Active Products Only
+GET {{baseUrl}}/products?isActive=true HTTP/1.1
+
+###
+
+### 3. Get Inactive Products Only
+GET {{baseUrl}}/products?isActive=false HTTP/1.1
+
+###
+
+### 4. Filter Products by Price Range
+GET {{baseUrl}}/products?minPrice=50&maxPrice=500 HTTP/1.1
+
+###
+
+### 5. Filter Active Products within Price Range
+GET {{baseUrl}}/products?isActive=true&minPrice=100&maxPrice=300 HTTP/1.1

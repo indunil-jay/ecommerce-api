@@ -1,5 +1,10 @@
-import { CreateProductCommandHandler } from "./use-cases/create-product/create-product.commandHandler";
+import { CreateProductCommandHandler } from "./commands/create-product/create-product.commandHandler";
+import { GetAllProductsQueryHandler } from "./queries/get-all-product.queryHandler";
 
 export const CommandHandlers = [
     CreateProductCommandHandler
+]
+
+export const QueryHandlers = [
+    GetAllProductsQueryHandler
 ]
