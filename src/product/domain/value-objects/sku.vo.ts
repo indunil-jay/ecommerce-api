@@ -11,13 +11,13 @@ export class Sku {
 
     public static create(value: string): Sku {
         const trimmed = value.trim();
-        if (trimmed.length > Sku.MAX_LENGTH || trimmed.length < Sku.MIN_LENGTH || !Sku.SKU_PATTERN.test(trimmed)) {
+        if (trimmed.length > Sku.MAX_LENGTH || trimmed.length < Sku.MIN_LENGTH) {
             throw new Error(`Sku must be between ${Sku.MIN_LENGTH} and ${Sku.MAX_LENGTH} characters`);
         }
-        if (Sku.SKU_PATTERN.test(trimmed)) {
+        if (!Sku.SKU_PATTERN.test(trimmed)) {
             throw new Error(
-                `Sku must contain only alphanumeric characters dashes`
-            )
+                `Sku must contain only alphanumeric characters`
+            );
         }
         return new Sku(trimmed.toUpperCase());
     }
