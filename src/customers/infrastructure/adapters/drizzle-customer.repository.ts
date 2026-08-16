@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { eq } from "drizzle-orm";
 import { CustomerRepository } from "src/customers/application/ports/customer-repository.port";
 import { Customer } from "src/customers/domain/entities/customer.entity";
 import { CustomerId } from "src/customers/domain/value-objects/customer-id.vo";
@@ -9,12 +10,12 @@ import { customers } from "src/shared/infrastructure/database/postgres/schemas";
 @Injectable()
 export class DrizzleCustomerRepository implements CustomerRepository {
     constructor(
-        @Inject(DRIZZLE) private readonly drizzle: DrizzleDB
+        @Inject(DRIZZLE) private readonly db: DrizzleDB
     ) {
     }
     async save(customer: Customer): Promise<void> {
         const row = DrizzleCustomerRepository.toPersistence(customer);
-        await this.drizzle.insert(customers)
+        await this.db.insert(customers)
             .values(row)
             .onConflictDoUpdate({
                 target: customers.id,
@@ -28,17 +29,20 @@ export class DrizzleCustomerRepository implements CustomerRepository {
                 }
             });
     }
-    findById(id: CustomerId): Promise<Customer | null> {
-        throw new Error("Method not implemented.");
+    async findById(id: CustomerId): Promise<Customer | null> {
+        const rows = await this.db.select().from(customers).where(eq(customers.id, id.getValue()));
+        return rows.length > 0 ? DrizzleCustomerRepository.toDomain(rows[0]) : null;
     }
-    findByEmail(email: Email): Promise<Customer | null> {
-        throw new Error("Method not implemented.");
+    async findByEmail(email: Email): Promise<Customer | null> {
+        const rows = await this.db.select().from(customers).where(eq(customers.email, email.getValue()));
+        return rows.length > 0 ? DrizzleCustomerRepository.toDomain(rows[0]) : null;
     }
-    findAll(): Promise<Customer[]> {
-        throw new Error("Method not implemented.");
+    async findAll(): Promise<Customer[]> {
+        const rows = await this.db.select().from(customers);
+        return rows.map(DrizzleCustomerRepository.toDomain);
     }
-    delete(id: CustomerId): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete(id: CustomerId): Promise<void> {
+        await this.db.delete(customers).where(eq(customers.id, id.getValue()));
     }
 
     private static toPersistence(customer: Customer): typeof customers.$inferSelect {
@@ -53,6 +57,17 @@ export class DrizzleCustomerRepository implements CustomerRepository {
             updatedAt: customer.getUpdatedAt()
         };
     }
-}
-    
 
+    private static toDomain(row: typeof customers.$inferSelect): Customer {
+        return Customer.reconstitute({
+            id: new CustomerId(row.id),
+            email:  Email.create(row.email),
+            firstName: row.firstName,
+            lastName: row.lastName,
+            isActive: row.isActive,
+            phone: row.phone,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt
+        });
+    }
+}
