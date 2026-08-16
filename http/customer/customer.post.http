@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Register Customer
+POST {{baseUrl}}/customers
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phone": "+1234567890"
+}
