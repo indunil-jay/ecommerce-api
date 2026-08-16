@@ -7,6 +7,7 @@ import { CommandHandlers, EventHandlers } from "./application/commands";
 import { QueryHandlers } from "./application/queries";
 import { NOTIFICATION_SERVICE } from "./application/ports/notification.port";
 import { ConsoleNotificationAdapter } from "./infrastructure/adapters/console-notification.adapter";
+import { NodeMailerNotificationAdapter } from "./infrastructure/adapters/nodemailer-notification.adapter";
 
 @Module({
     imports: [CqrsModule],
@@ -21,7 +22,8 @@ import { ConsoleNotificationAdapter } from "./infrastructure/adapters/console-no
         },
         {
             provide:NOTIFICATION_SERVICE,
-            useClass: ConsoleNotificationAdapter
+            useClass: ConsoleNotificationAdapter,
+            // useClass: NodeMailerNotificationAdapter
         }
     ],
 })
