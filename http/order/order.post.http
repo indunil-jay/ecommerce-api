@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Place Order
+POST {{baseUrl}}/orders
+Content-Type: {{contentType}}
+
+{
+  "customerId": "b9a544ff-c7c4-4b53-b09e-7164998782a4",
+  "items": [
+    {
+      "productId": "bdd01b79-1319-41c1-b7d3-2a61019138d1",
+      "productName": "Wireless Noise Cancelling Headphones",
+      "unitPrice": 299.99,
+      "currency": "USD",
+      "quantity": 2,
+      "discountAmount": 19.99,
+      "discountCurrency": "USD"
+    }
+  ],
+  "shippingAddress": {
+    "street": "123 Main Street",
+    "city": "San Francisco",
+    "state": "CA",
+    "zipCode": "94105",
+    "country": "USA"
+  }
+}

@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:3000
+
+### 1. Get All Orders
+GET {{baseUrl}}/orders HTTP/1.1
+
+###
+
+### 2. Get Orders by Customer ID
+@customerId = b9a544ff-c7c4-4b53-b09e-7164998782a4
+GET {{baseUrl}}/orders?customerId={{customerId}} HTTP/1.1
+
+###
+
+### 3. Get Order by ID
+@orderId = e12c478a-c85e-4ff6-9993-9c87d46c87cf
+GET {{baseUrl}}/orders/{{orderId}} HTTP/1.1

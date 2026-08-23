@@ -85,40 +85,44 @@ export class Order extends AggregateRoot {
         )
     }
 
-    get id() : OrderId {
+    get id(): OrderId {
         return this._id;
     }
 
-    get customerId() : string {
+    get customerId(): string {
         return this._customerId;
     }
 
-    get status() : OrderStatus {
+    get status(): OrderStatus {
         return this._status;
     }
 
-    get items() : OrderItem[] {
+    get items(): OrderItem[] {
         return this._items;
     }
 
-    get shippingAddress() : ShippingAddress {
+    get shippingAddress(): ShippingAddress {
         return this._shippingAddress;
     }
 
-    get trackingNumber() : string | null {
+    get trackingNumber(): string | null {
         return this._trackingNumber;
     }
 
-    get notes() : string | null {
+    get notes(): string | null {
         return this._notes;
     }
 
-    get createdAt() : Date {
+    get createdAt(): Date {
         return this._createdAt;
     }
 
-    get updatedAt() : Date {
+    get updatedAt(): Date {
         return this._updatedAt;
+    }
+
+    getItemsCount(): number {
+        return this._items.reduce((count, item) => count + item.quantity, 0);
     }
 
 }

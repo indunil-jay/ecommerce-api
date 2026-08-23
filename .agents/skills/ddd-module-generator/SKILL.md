@@ -9,7 +9,37 @@ Use this skill whenever creating a new feature module (e.g., `referrals`, `inven
 
 ---
 
-## 1. Architectural File Structure
+## 1. Clean Architecture Dependency Rules
+
+> [!IMPORTANT]
+> **Strict Dependency Inversion & Layer Direction Rules**:
+> 1. **Domain Layer (Core)**: 0 external dependencies. Never imports from Application, Infrastructure, or Presentation.
+> 2. **Application Layer (Use Cases / CQRS)**: Depends **ONLY** on Domain. **NEVER** import anything from Presentation (e.g., Request/Response DTOs) or Infrastructure. Commands and queries must define their own self-contained command inputs or use primitives.
+> 3. **Infrastructure Layer (Adapters)**: Implements Application ports (`ports/<module>.repository.port.ts`). Injects database instances via DI tokens.
+> 4. **Presentation Layer (Controllers & DTOs)**: Outer layer. Depends on Application (dispatches commands & queries via `CommandBus`/`QueryBus`). Maps Presentation Request DTOs -> Application Commands, and Domain entities -> Response DTOs.
+
+```text
+┌────────────────────────────────────────────────────────┐
+│                   Presentation Layer                   │
+│   (Controllers, Request/Response DTOs, HTTP Routes)   │
+└──────────────────────────┬─────────────────────────────┘
+                           │ Dispatches commands/queries
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│                   Application Layer                    │
+│   (Commands, Queries, Handlers, Ports/Interfaces)      │
+└──────────┬─────────────────────────────────┬───────────┘
+           │ Implements Ports                │ Uses Entities & VOs
+           ▼                                 ▼
+┌───────────────────────┐         ┌──────────────────────┐
+│  Infrastructure Layer │         │     Domain Layer     │
+│ (Drizzle/Mongo Repos) │         │ (Entities, VOs, Root)│
+└───────────────────────┘         └──────────────────────┘
+```
+
+---
+
+## 2. Architectural File Structure
 
 For a new module `<module>` (e.g., `referral`), create the following directory tree under `src/<module>/`:
 
@@ -56,10 +86,11 @@ Shared schema files to register/update:
 - `src/shared/infrastructure/database/postgres/schemas/<module>.schema.ts`
 - `src/shared/infrastructure/database/postgres/schemas/index.ts` (export schema)
 - `src/app.module.ts` (register module in `imports`)
+- `http/<module>/` (`<module>.post.http`, `<module>-get.http`, `<module>.delete.http`)
 
 ---
 
-## 2. Layer-by-Layer Implementation Standards
+## 3. Layer-by-Layer Implementation Standards
 
 ### A. Domain Layer (`src/<module>/domain/`)
 
@@ -128,6 +159,9 @@ export class <Module> extends AggregateRoot {
 
 ### B. Application Layer (`src/<module>/application/`)
 
+> [!CAUTION]
+> **No Presentation Imports**: Never import anything from `presentation/dtos` in this layer. Define command interfaces/types locally in the command file.
+
 #### 1. Repository Port: `ports/<module>.repository.port.ts`
 ```typescript
 import { <Module> } from "../../domain/entities/<module>.entity";
@@ -146,8 +180,12 @@ export interface <Module>Repository {
 #### 2. Commands & Handlers (`commands/`)
 - `create-<module>/create-<module>.command.ts`:
   ```typescript
+  export interface Create<Module>CommandInput {
+      // Define application-level input fields using primitive types
+  }
+
   export class Create<Module>Command {
-      constructor() {}
+      constructor(public readonly input: Create<Module>CommandInput) {}
   }
   ```
 - `create-<module>/create-<module>.commandHandler.ts`:
@@ -159,15 +197,16 @@ export interface <Module>Repository {
   import { <Module> } from "../../../domain/entities/<module>.entity";
 
   @CommandHandler(Create<Module>Command)
-  export class Create<Module>CommandHandler implements ICommandHandler<Create<Module>Command> {
+  export class Create<Module>CommandHandler implements ICommandHandler<Create<Module>Command, <Module>> {
       constructor(
           @Inject(<MODULE_UPPER>_REPOSITORY)
           private readonly repository: <Module>Repository,
       ) {}
 
-      async execute(command: Create<Module>Command): Promise<void> {
+      async execute(command: Create<Module>Command): Promise<<Module>> {
           const entity = <Module>.create();
           await this.repository.save(entity);
+          return entity;
       }
   }
   ```
@@ -321,24 +360,21 @@ export class Drizzle<Module>Repository implements <Module>Repository {
 ### D. Presentation Layer (`src/<module>/presentation/`)
 
 #### 1. DTOs
-- `dtos/create-<module>.dto.ts`:
-  ```typescript
-  export class Create<Module>Dto {}
-  ```
+- `dtos/create-<module>.dto.ts`: Decorated with `class-validator` and `class-transformer`.
 - `dtos/<module>-response.dto.ts`:
   ```typescript
   import { <Module> } from "../../domain/entities/<module>.entity";
 
   export class <Module>ResponseDto {
       id: string;
-      createdAt: Date;
-      updatedAt: Date;
+      createdAt: string;
+      updatedAt: string;
 
       static fromDomain(entity: <Module>): <Module>ResponseDto {
           const dto = new <Module>ResponseDto();
           dto.id = entity.id.getValue();
-          dto.createdAt = entity.createdAt;
-          dto.updatedAt = entity.updatedAt;
+          dto.createdAt = entity.createdAt.toISOString();
+          dto.updatedAt = entity.updatedAt.toISOString();
           return dto;
       }
   }
@@ -362,8 +398,12 @@ export class <Module>Controller {
     ) {}
 
     @Post()
-    async create(@Body() dto: Create<Module>Dto): Promise<void> {
-        await this.commandBus.execute(new Create<Module>Command());
+    async create(@Body() dto: Create<Module>Dto): Promise<<Module>ResponseDto> {
+        // Map presentation DTO to application command
+        const entity = await this.commandBus.execute<Create<Module>Command, <Module>>(
+            new Create<Module>Command({ ...dto })
+        );
+        return <Module>ResponseDto.fromDomain(entity);
     }
 
     @Get()
@@ -421,14 +461,24 @@ export class <Module>Module {}
 
 ---
 
-## 3. Workflow Checklist when user asks to scaffold a module
+### F. HTTP Request Testing (`http/<module>/`)
+
+For every new module, create REST test requests matching `product`, `customer`, and `order`:
+- `http/<module>/<module>.post.http` (POST create payload)
+- `http/<module>/<module>-get.http` (GET all and GET by ID)
+- `http/<module>/<module>.delete.http` (DELETE by ID)
+
+---
+
+## 4. Workflow Checklist when user asks to scaffold a module
 
 1. Identify the module entity name in singular (e.g. `Referral`), kebab (e.g. `referral`), plural (e.g. `referrals`), and symbol (e.g. `REFERRAL_REPOSITORY`).
 2. Create directory hierarchy under `src/<module>/`.
 3. Create all domain files (Value Objects & Entities).
-4. Create application ports, commands, command handlers, queries, query handlers, and barrel exports `index.ts`.
+4. Create application ports, commands (with self-contained inputs, **no presentation imports**), command handlers, queries, query handlers, and barrel exports `index.ts`.
 5. Create schema under `src/shared/infrastructure/database/postgres/schemas/<module>.schema.ts` and re-export in `schemas/index.ts`.
 6. Create Drizzle adapter repository under `src/<module>/infrastructure/adapters/drizzle-<module>.repository.ts`.
-7. Create presentation DTOs and Controller.
+7. Create presentation DTOs and Controller (mapping Request DTOs to Application Commands, and Domain entities to Response DTOs).
 8. Create `<module>.module.ts` and register in `src/app.module.ts`.
-9. Run `npm run build` to verify type safety and compilation.
+9. Create HTTP test request files under `http/<module>/`.
+10. Run `npm run build` to verify type safety and compilation.

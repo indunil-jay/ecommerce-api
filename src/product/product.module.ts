@@ -28,6 +28,7 @@ import { CommandHandlers } from "./application/commands";
             return dbType === "mongodb" ? mongoRepo : drizzleRepo;
          }
       }
-   ]
+   ],
+   exports: [PRODUCT_REPOSITORY]
 })
 export class ProductModule { }

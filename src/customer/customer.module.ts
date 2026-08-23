@@ -21,10 +21,11 @@ import { NodeMailerNotificationAdapter } from "./infrastructure/adapters/nodemai
             useClass: DrizzleCustomerRepository
         },
         {
-            provide:NOTIFICATION_SERVICE,
+            provide: NOTIFICATION_SERVICE,
             useClass: ConsoleNotificationAdapter,
             // useClass: NodeMailerNotificationAdapter
         }
     ],
+    exports: [CUSTOMER_REPOSITORY]
 })
 export class CustomerModule {}

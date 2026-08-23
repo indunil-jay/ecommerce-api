@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:3000
+
+### Delete Order by ID
+@orderId = e12c478a-c85e-4ff6-9993-9c87d46c87cf
+DELETE {{baseUrl}}/orders/{{orderId}} HTTP/1.1
