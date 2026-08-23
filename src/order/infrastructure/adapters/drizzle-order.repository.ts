@@ -4,6 +4,10 @@ import { OrderRepository } from "src/order/application/ports/order.repository.po
 import { OrderItem } from "src/order/domain/entities/order-item.entity";
 import { Order } from "src/order/domain/entities/order.entity";
 import { OrderId } from "src/order/domain/value-objects/order-id.vo";
+import { OrderStatus } from "src/order/domain/value-objects/order-status.vo";
+import { ShippingAddress } from "src/order/domain/value-objects/shipping-address.vo";
+import { Money } from "src/shared/domain/value-objects/money";
+import { UniqueId } from "src/shared/domain/value-objects/unique-id.vo";
 import { DRIZZLE, DrizzleDB } from "src/shared/infrastructure/database/postgres/drizzle.provider";
 import { orderItems, orders } from "src/shared/infrastructure/database/postgres/schemas";
 
@@ -69,17 +73,37 @@ export class DrizzleOrderRepository implements OrderRepository {
 
 
     }
-    findById(id: OrderId): Promise<Order | null> {
-        throw new Error("Method not implemented.");
+   async findById(id: OrderId): Promise<Order | null> {
+        const result = await this.db.query.orders.findFirst({
+            where: eq(orders.id, id.getValue()),
+            with: {
+                items: true
+            }
+        })
+        return result ? DrizzleOrderRepository.toDomain(result, result.items) : null;
     }
-    findByCustomerId(customerId: string): Promise<Order[]> {
-        throw new Error("Method not implemented.");
+    async findByCustomerId(customerId: string): Promise<Order[]> {
+        const result = await this.db.query.orders.findMany({
+            where: eq(orders.customerId, customerId),
+            with: {
+                items: true
+            }
+        })
+        return result.map((order) => DrizzleOrderRepository.toDomain(order, order.items));
     }
-    findAll(): Promise<Order[]> {
-        throw new Error("Method not implemented.");
+    async findAll(): Promise<Order[]> {
+        const result = await this.db.query.orders.findMany({
+            with: {
+                items: true
+            }
+        })
+        return result.map((order) => DrizzleOrderRepository.toDomain(order, order.items));
     }
-    delete(id: OrderId): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete(id: OrderId): Promise<void> {
+        await this.db.transaction(async (tx)=>{
+            await tx.delete(orderItems).where(eq(orderItems.orderId, id.getValue()));
+         await tx.delete(orders).where(eq(orders.id, id.getValue()));
+        })
     }
 
 
@@ -119,6 +143,42 @@ export class DrizzleOrderRepository implements OrderRepository {
             createdAt: new Date(),
 
         }
+    }
+
+    private static toDomain(orderRow: typeof orders.$inferSelect, itemRows: typeof orderItems.$inferSelect[]): Order {
+        const items = itemRows.map((row) => {
+            const discount = row.discountAmount !== null && row.discountCurrency !== null ?
+                Money.create(row.discountAmount / 100, row.discountCurrency) : null;
+            return OrderItem.reconstitute({
+                id: new UniqueId(row.id),
+                productId: row.productId,
+                productName: row.productName,
+                unitPrice: Money.create(row.unitPriceAmount / 100, row.unitPriceCurrency),
+                quantity: row.quantity,
+                discount: discount,
+            })
+        })
+
+        const shippingAddress = ShippingAddress.create({
+            street: orderRow.shippingStreet ?? '',
+            city: orderRow.shippingCity ?? '',
+            state: orderRow.shippingState ?? '',
+            zipCode: orderRow.shippingZipCode ?? '',
+            country: orderRow.shippingCountry ?? '',
+        })
+
+        return Order.reconsitute({
+            id: new OrderId(orderRow.id),
+            customerId: orderRow.customerId,
+            status: OrderStatus.fromString(orderRow.status),
+            items: items,
+            shippingAddress: shippingAddress,
+            trackingNumber: orderRow.trackingNumber,
+            notes: orderRow.notes,
+            createdAt: orderRow.createdAt,
+            updatedAt: orderRow.updatedAt
+        })
+
     }
 
 }

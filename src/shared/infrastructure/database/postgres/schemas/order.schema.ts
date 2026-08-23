@@ -1,6 +1,7 @@
 import { integer, pgEnum, pgTable, timestamp, uuid, varchar, text } from "drizzle-orm/pg-core";
 import { customers } from "./customer.schema";
 import { products } from "./product.schema";
+import { relations } from "drizzle-orm";
 
 
 export const orderStatusEnum = pgEnum('order_status', [
@@ -42,3 +43,16 @@ export const orderItems = pgTable('order_items', {
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
+
+
+export const orderRelations = relations(orders, ({ many }) => ({
+    items: many(orderItems)
+}));
+
+
+export const orderItemRelations = relations(orderItems, ({ one }) => ({
+    order: one(orders, {
+        fields: [orderItems.orderId],
+        references: [orders.id]
+    })
+}))
