@@ -51,6 +51,10 @@ export class Money {
     return Money.create(this.amount * factor, this.currency);
   }
 
+  static zero (currency:string ='usd'):Money {
+  return new Money(0,currency.toUpperCase())
+  }
+
   private assertSameCurrency(other: Money): void {
     if (this.currency !== other.currency) {
       throw new DomainException('Currencies must match');
