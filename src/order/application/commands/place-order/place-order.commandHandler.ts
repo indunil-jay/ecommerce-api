@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 import { Inject } from "@nestjs/common";
 import { PlaceOrderCommand } from "./place-order.command";
 import { ORDER_REPOSITORY, OrderRepository } from "../../ports/order.repository.port";
@@ -20,7 +20,8 @@ export class PlaceOrderCommandHandler implements ICommandHandler<PlaceOrderComma
         @Inject(CUSTOMER)
         private readonly customer: CustomerPort,
         @Inject(PRODUCT)
-        private readonly product: ProductPort
+        private readonly product: ProductPort,
+        private readonly eventPublisher: EventPublisher
     ) { }
 
     async execute(command: PlaceOrderCommand): Promise<void> {
@@ -61,7 +62,8 @@ export class PlaceOrderCommandHandler implements ICommandHandler<PlaceOrderComma
             country: command.shippingAddress.country,
         });
 
-        const order = Order.place(command.customerId, items, shippingAddress);
+        const order = this.eventPublisher.mergeObjectContext(Order.place(command.customerId, items, shippingAddress));
         await this.orderRepository.save(order);
+        order.commit();
     }
 }

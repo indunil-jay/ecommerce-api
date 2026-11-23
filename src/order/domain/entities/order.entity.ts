@@ -5,6 +5,7 @@ import { OrderItem } from "./order-item.entity";
 import { ShippingAddress } from "../value-objects/shipping-address.vo";
 import { DomainException } from "src/shared/domain/exceptions/domain.exception";
 import { Money } from "src/shared/domain/value-objects/money";
+import { OrderPlacedEvent } from "../events/order-placed.event";
 
 interface OrderProps {
     id: OrderId;
@@ -62,6 +63,7 @@ export class Order extends AggregateRoot {
             createdAt: now,
             updatedAt: now
         })
+        order.apply(new OrderPlacedEvent(id.getValue(),customerId));
         return order;
     }
 
