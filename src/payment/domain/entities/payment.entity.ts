@@ -3,6 +3,7 @@ import { PaymentId } from "../value-objects/payment-id.vo";
 import { PaymentStatus } from "../value-objects/payment-status.vo";
 import { AggregateRoot } from "src/shared/domain/aggregates/aggregate-root";
 import { DomainException } from "src/shared/domain/exceptions/domain.exception";
+import { PaymentCompletedEvent } from "../events/payment-completed.event";
 
 export interface PaymentProps {
     id: PaymentId;
@@ -36,7 +37,7 @@ export class Payment extends AggregateRoot {
 
     static initiate(orderId: string, amount: Money): Payment {
         if (amount.getAmount() <= 0) throw new DomainException("Payment amount must be greater than zero");
-        const now  = new Date();
+        const now = new Date();
 
         const payment = new Payment({
             id: new PaymentId(),
@@ -59,12 +60,20 @@ export class Payment extends AggregateRoot {
         return this._status.isSucceeded();
     }
 
-    startCheckout () {
-        if(this.isSucceeded()) {
+    startCheckout() {
+        if (this.isSucceeded()) {
             throw new DomainException(`Cannot start checkout for a payment in ${this.status.getValue()} status`)
         }
         this._status = PaymentStatus.processing()
         this._updatedAt = new Date()
+    }
+
+    complete(gatewayTransactionId: string) {
+        this._gatewayTransactionId = gatewayTransactionId;
+        this._status = this._status.transitionToSucceeded();
+        this._updatedAt = new Date();
+        this.apply(new PaymentCompletedEvent(this._id.getValue(), this._orderId, gatewayTransactionId))
+
     }
 
     get id(): PaymentId {

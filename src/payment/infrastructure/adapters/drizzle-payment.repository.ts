@@ -13,6 +13,13 @@ import { payments } from "src/shared/infrastructure/database/postgres/schemas/pa
 @Injectable()
 export class DrizzlePaymentRepository implements PaymentRepository {
     constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) { }
+ async   findById(id: PaymentId): Promise<Payment | null> {
+        const row = await this.db.query.payments.findFirst({ where: eq(payments.id, id.getValue()) });
+        if (!row) {
+            return null;
+        }
+        return DrizzlePaymentRepository.toDomain(row);
+    }
     async save(payment: Payment): Promise<void> {
         const row = DrizzlePaymentRepository.toPersistence(payment);
         await this.db.insert(payments).values(row).onConflictDoUpdate({

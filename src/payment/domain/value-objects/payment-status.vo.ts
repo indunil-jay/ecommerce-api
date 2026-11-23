@@ -36,6 +36,19 @@ export class PaymentStatus {
         return this._value === PaymentStatusValue.Succeeded;
     }
 
+    isProcessing() :boolean {
+        return this._value === PaymentStatusValue.Processing
+    }
+
+    transitionToSucceeded() : PaymentStatus {
+         if(this.isProcessing()){
+            throw new DomainException(`Cannot transition to succeeded from ${this._value}. only processing payments can succeed`)
+         }
+     return PaymentStatus.succeeded()
+    }
+
+
+
     getValue(): PaymentStatusValue {
         return this._value;
     }
