@@ -7,6 +7,8 @@ import { Order } from "../domain/entities/order.entity";
 import { PlaceOrderCommand } from "../application/commands/place-order/place-order.command";
 import { DeleteOrderCommand } from "../application/commands/delete-order/delete-order.command";
 import { ConfirmOrderCommand } from "../application/commands/confirm-order/confirm-order.command";
+import { ShipOrderDto } from "./dtos/ship-order.dto";
+import { ShipOrderCommand } from "../application/commands/ship-order/ship-order.command";
 
 @Controller("orders")
 export class OrderController {
@@ -73,4 +75,14 @@ export class OrderController {
             new ConfirmOrderCommand(id)
         );
     }
+
+    @Patch(":id/ship")
+    async ship(@Param("id", new ParseUUIDPipe()) id: string,
+        @Body() shipOrderDto: ShipOrderDto
+    ): Promise<void> {
+       await this.commandBus.execute<ShipOrderCommand, void>(
+            new ShipOrderCommand(id, shipOrderDto.trackingNumber)
+        );
+    }
+    
 }

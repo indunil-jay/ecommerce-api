@@ -7,6 +7,7 @@ import { DomainException } from "src/shared/domain/exceptions/domain.exception";
 import { Money } from "src/shared/domain/value-objects/money";
 import { OrderPlacedEvent } from "../events/order-placed.event";
 import { OrderConfirmedEvent } from "../events/order-confirmed.event";
+import { OrderShippedEvent } from "../events/order-shipped.event";
 
 interface OrderProps {
     id: OrderId;
@@ -139,6 +140,18 @@ export class Order extends AggregateRoot {
             zipCode: this._shippingAddress.zipCode,
             country: this._shippingAddress.country
         }));
+        
     }
 
+
+    ship(trackingNumber: string): void {
+        if (!trackingNumber || trackingNumber.trim().length === 0) {
+            throw new DomainException('Tracking number is required to ship the order.');
+        }
+
+        this._status = this._status.ship();
+        this._trackingNumber = trackingNumber.trim();
+        this._updatedAt = new Date();
+        this.apply(new OrderShippedEvent(this._id.getValue(), this._trackingNumber, this._customerId));
+    }
 }
