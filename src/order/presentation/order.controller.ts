@@ -10,6 +10,8 @@ import { ConfirmOrderCommand } from "../application/commands/confirm-order/confi
 import { ShipOrderDto } from "./dtos/ship-order.dto";
 import { ShipOrderCommand } from "../application/commands/ship-order/ship-order.command";
 import { DeliverOrderCommand } from "../application/commands/deliver-order/deliver-order.command";
+import { CancelOrderCommand } from "../application/commands/cancel-order/cancel-order.command";
+import { CancelOrderDto } from "./dtos/cancel-order.dto";
 
 @Controller("orders")
 export class OrderController {
@@ -91,6 +93,16 @@ export class OrderController {
     async deliver(@Param("id", new ParseUUIDPipe()) id: string): Promise<void> {
         await this.commandBus.execute<DeliverOrderCommand, void>(
             new DeliverOrderCommand(id)
+        );
+    }
+
+
+    @Patch(":id/cancel")
+    async cancel(@Param("id", new ParseUUIDPipe()) id: string,
+        @Body() cancelOrderDto: CancelOrderDto
+    ): Promise<void> {
+        await this.commandBus.execute<CancelOrderCommand, void>(
+            new CancelOrderCommand(id, cancelOrderDto.reason)
         );
     }
 }

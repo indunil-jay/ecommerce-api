@@ -9,6 +9,7 @@ import { OrderPlacedEvent } from "../events/order-placed.event";
 import { OrderConfirmedEvent } from "../events/order-confirmed.event";
 import { OrderShippedEvent } from "../events/order-shipped.event";
 import { OrderDeliveredEvent } from "../events/order-delivered.event";
+import { OrderCancelledEvent } from "../events/order-cancelled.event";
 
 interface OrderProps {
     id: OrderId;
@@ -161,4 +162,14 @@ export class Order extends AggregateRoot {
         this._updatedAt = new Date();
         this.apply(new OrderDeliveredEvent(this._id.getValue(), this._customerId));
     }
+
+    cancel(reason: string): void {
+        if (!reason || reason.trim().length === 0) {
+            throw new DomainException('Cancellation reason is required to cancel the order.');
+        }
+        this._status = this._status.cancel();
+        this._updatedAt = new Date();
+        this.apply(new OrderCancelledEvent(this._id.getValue(), this._customerId, reason));
+    }
 }
+

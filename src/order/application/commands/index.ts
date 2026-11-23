@@ -7,6 +7,8 @@ import { ShipOrderCommandHandler } from "./ship-order/ship-order.commandHandler"
 import { OrderShippedEventHandler } from "./ship-order/order-shipped.eventHandler";
 import { DeliverOrderCommandHandler } from "./deliver-order/deliver-order.commandHandler";
 import { OrderDeliveredEventHandler } from "./deliver-order/order-delivered.eventHandler";
+import { CancelOrderCommandHandler } from "./cancel-order/cancel-order.commandHandler";
+import { OrderCancelledEventHandler } from "./cancel-order/order-cancelled.eventHandler";
 
 export const CommandHandlers = [
     PlaceOrderCommandHandler,
@@ -14,6 +16,7 @@ export const CommandHandlers = [
     ConfirmOrderCommandHandler,
     ShipOrderCommandHandler,
     DeliverOrderCommandHandler,
+    CancelOrderCommandHandler
 ];
 
 
@@ -21,5 +24,6 @@ export const EventHandlers = [
     OrderPlacedEventHandler,
     OrderConfirmedEventHandler, 
     OrderShippedEventHandler, 
-    OrderDeliveredEventHandler
+    OrderDeliveredEventHandler,
+    OrderCancelledEventHandler,
 ];
