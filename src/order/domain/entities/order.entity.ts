@@ -6,6 +6,7 @@ import { ShippingAddress } from "../value-objects/shipping-address.vo";
 import { DomainException } from "src/shared/domain/exceptions/domain.exception";
 import { Money } from "src/shared/domain/value-objects/money";
 import { OrderPlacedEvent } from "../events/order-placed.event";
+import { OrderConfirmedEvent } from "../events/order-confirmed.event";
 
 interface OrderProps {
     id: OrderId;
@@ -125,6 +126,19 @@ export class Order extends AggregateRoot {
 
     getItemsCount(): number {
         return this._items.reduce((count, item) => count + item.quantity, 0);
+    }
+
+    confirm() :void {
+        this._status = this._status.confirm();
+        this._updatedAt = new Date();
+
+        this.apply(new OrderConfirmedEvent(this._id.getValue(), this._customerId, {
+            street: this._shippingAddress.street,
+            city: this._shippingAddress.city,
+            state: this._shippingAddress.state,
+            zipCode: this._shippingAddress.zipCode,
+            country: this._shippingAddress.country
+        }));
     }
 
 }

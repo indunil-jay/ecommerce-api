@@ -7,6 +7,4 @@ export const QueryHandlers = [
 ];
 
 export * from "./get/get-order.query";
-export * from "./get/get-order.queryHandler";
 export * from "./get-all/get-all-orders.query";
-export * from "./get-all/get-all-orders.queryHandler";

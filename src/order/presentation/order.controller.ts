@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { OrderResponseDto } from "./dtos/order-response.dto";
 import { PlaceOrderDto } from "./dtos/place-order.dto";
@@ -6,6 +6,7 @@ import { GetOrderQuery, GetAllOrdersQuery } from "../application/queries";
 import { Order } from "../domain/entities/order.entity";
 import { PlaceOrderCommand } from "../application/commands/place-order/place-order.command";
 import { DeleteOrderCommand } from "../application/commands/delete-order/delete-order.command";
+import { ConfirmOrderCommand } from "../application/commands/confirm-order/confirm-order.command";
 
 @Controller("orders")
 export class OrderController {
@@ -62,6 +63,14 @@ export class OrderController {
     async delete(@Param("id", new ParseUUIDPipe()) id: string): Promise<void> {
         await this.commandBus.execute<DeleteOrderCommand, void>(
             new DeleteOrderCommand(id)
+        );
+    }
+
+
+    @Patch(":id/confirm")
+    async confirm(@Param("id", new ParseUUIDPipe()) id: string): Promise<void> {
+       await this.commandBus.execute<ConfirmOrderCommand, void>(
+            new ConfirmOrderCommand(id)
         );
     }
 }
