@@ -8,6 +8,7 @@ import { Money } from "src/shared/domain/value-objects/money";
 import { OrderPlacedEvent } from "../events/order-placed.event";
 import { OrderConfirmedEvent } from "../events/order-confirmed.event";
 import { OrderShippedEvent } from "../events/order-shipped.event";
+import { OrderDeliveredEvent } from "../events/order-delivered.event";
 
 interface OrderProps {
     id: OrderId;
@@ -153,5 +154,11 @@ export class Order extends AggregateRoot {
         this._trackingNumber = trackingNumber.trim();
         this._updatedAt = new Date();
         this.apply(new OrderShippedEvent(this._id.getValue(), this._trackingNumber, this._customerId));
+    }
+
+    deliver(): void {
+        this._status = this._status.deliver();
+        this._updatedAt = new Date();
+        this.apply(new OrderDeliveredEvent(this._id.getValue(), this._customerId));
     }
 }

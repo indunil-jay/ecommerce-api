@@ -9,6 +9,7 @@ import { DeleteOrderCommand } from "../application/commands/delete-order/delete-
 import { ConfirmOrderCommand } from "../application/commands/confirm-order/confirm-order.command";
 import { ShipOrderDto } from "./dtos/ship-order.dto";
 import { ShipOrderCommand } from "../application/commands/ship-order/ship-order.command";
+import { DeliverOrderCommand } from "../application/commands/deliver-order/deliver-order.command";
 
 @Controller("orders")
 export class OrderController {
@@ -84,5 +85,14 @@ export class OrderController {
             new ShipOrderCommand(id, shipOrderDto.trackingNumber)
         );
     }
-    
+
+
+    @Patch(":id/deliver")
+    async deliver(@Param("id", new ParseUUIDPipe()) id: string): Promise<void> {
+        await this.commandBus.execute<DeliverOrderCommand, void>(
+            new DeliverOrderCommand(id)
+        );
+    }
 }
+
+
