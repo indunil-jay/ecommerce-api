@@ -31,4 +31,8 @@ export class PaymentStatus {
         }
         return new PaymentStatus(status);
     }
+
+    getValue(): PaymentStatusValue {
+        return this._value;
+    }
 }

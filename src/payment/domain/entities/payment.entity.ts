@@ -1,6 +1,6 @@
 import { Money } from "src/shared/domain/value-objects/money";
-import { PaymentId } from "../domain/value-objects/payment-id.vo";
-import { PaymentStatus } from "../domain/value-objects/payment-status.vo";
+import { PaymentId } from "../value-objects/payment-id.vo";
+import { PaymentStatus } from "../value-objects/payment-status.vo";
 import { AggregateRoot } from "src/shared/domain/aggregates/aggregate-root";
 import { DomainException } from "src/shared/domain/exceptions/domain.exception";
 
