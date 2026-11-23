@@ -11,6 +11,7 @@ import { PRODUCT } from "./application/ports/product.port";
 import { ProductAdapter } from "./infrastructure/adapters/product.adapter";
 import { CustomerModule } from "src/customer/customer.module";
 import { ProductModule } from "src/product/product.module";
+import { OrderFulfilmentSaga } from "./application/sagas/order-fullfilment.saga";
 
 @Module({
     imports: [ CustomerModule, ProductModule],
@@ -19,6 +20,7 @@ import { ProductModule } from "src/product/product.module";
         ...CommandHandlers,
         ...QueryHandlers,
         ...EventHandlers,
+        OrderFulfilmentSaga,
         {
             provide: ORDER_REPOSITORY,
             useClass: DrizzleOrderRepository
