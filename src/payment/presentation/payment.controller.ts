@@ -1,0 +1,32 @@
+import { Body, Controller, Header, Headers, Inject, Logger, Post, RawBody } from "@nestjs/common";
+import { CreatePaymentDto } from "./dtos/create-payment.dto";
+import { CommandBus } from "@nestjs/cqrs";
+import { CreatePaymentCommand } from "../application/commands/create-payment/create-payment.command";
+import { IPaymentGateway, PAYMENT_GATEWAY } from "../application/ports/payment-gateway.port";
+
+@Controller('payments')
+export class PaymentController {
+    private readonly logger = new Logger(PaymentController.name)
+    constructor(
+        private readonly commandBus: CommandBus,
+        @Inject(PAYMENT_GATEWAY) private readonly paymentGateway: IPaymentGateway
+    ) { }
+
+    @Post()
+    async createPayment(
+        @Body() req: CreatePaymentDto
+    ) {
+        return this.commandBus.execute(
+            new CreatePaymentCommand(req.orderId, req.successUrl, req.cancelUrl)
+        )
+    }
+
+    @Post('webhook')
+    async handleWebhook(
+        @RawBody() payload: Buffer,
+        @Headers('stripe-signature') signature: string
+    ) {
+        const event = this.paymentGateway.constructWebhookEvent(payload, signature)
+        this.logger.log('Got stripe webhook event',event)
+    }
+}

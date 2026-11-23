@@ -13,7 +13,7 @@ import { CustomerModule } from "src/customer/customer.module";
 import { ProductModule } from "src/product/product.module";
 
 @Module({
-    imports: [CqrsModule, CustomerModule, ProductModule],
+    imports: [ CustomerModule, ProductModule],
     controllers: [OrderController],
     providers: [
         ...CommandHandlers,

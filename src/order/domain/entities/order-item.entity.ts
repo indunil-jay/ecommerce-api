@@ -80,6 +80,11 @@ export class OrderItem extends Entity {
     this._discount = null;
   }
 
+  getEffectiveUnitPrice() :Money {
+    const subTotal = this.getSubtotal()
+    return Money.fromCents(subTotal.toCents()/this._quantity,subTotal.getCurrency())
+  }
+
   getSubtotal(): Money {
     const lineTotal = this._unitPrice.multiplyBy(this._quantity);
     if (this._discount) {

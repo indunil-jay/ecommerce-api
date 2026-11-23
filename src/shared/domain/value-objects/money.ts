@@ -55,6 +55,10 @@ export class Money {
   return new Money(0,currency.toUpperCase())
   }
 
+  static fromCents(cents:number,currency:string='usd') {
+    return new Money(cents/100,currency.toUpperCase())
+  }
+
   private assertSameCurrency(other: Money): void {
     if (this.currency !== other.currency) {
       throw new DomainException('Currencies must match');

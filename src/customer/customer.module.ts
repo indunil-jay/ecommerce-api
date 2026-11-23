@@ -10,7 +10,6 @@ import { ConsoleNotificationAdapter } from "./infrastructure/adapters/console-no
 import { NodeMailerNotificationAdapter } from "./infrastructure/adapters/nodemailer-notification.adapter";
 
 @Module({
-    imports: [CqrsModule],
     controllers: [CustomerController],
     providers: [
         ...CommandHandlers,
