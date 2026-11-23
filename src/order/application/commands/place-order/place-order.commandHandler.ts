@@ -45,12 +45,11 @@ export class PlaceOrderCommandHandler implements ICommandHandler<PlaceOrderComma
                 item.productName,
                 Money.create(item.unitPrice, item.currency || "usd"),
                 item.quantity,
+                item.discountAmount !== undefined && item.discountAmount !== null
+                    ? Money.create(item.discountAmount, item.discountCurrency || item.currency || "usd")
+                    : undefined
             );
-            if (item.discountAmount !== undefined && item.discountAmount !== null) {
-                orderItem.applyDiscount(
-                    Money.create(item.discountAmount, item.discountCurrency || item.currency || "usd")
-                );
-            }
+
             return orderItem;
         });
 
